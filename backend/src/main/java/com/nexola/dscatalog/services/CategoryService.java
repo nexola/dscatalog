@@ -3,12 +3,12 @@ package com.nexola.dscatalog.services;
 import com.nexola.dscatalog.dto.CategoryDTO;
 import com.nexola.dscatalog.entities.Category;
 import com.nexola.dscatalog.repositories.CategoryRepository;
+import com.nexola.dscatalog.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +25,9 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id) {
-        Category cat = repository.findById(id).get();
+        Category cat = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Recurso não encontrado")
+        );
         return new CategoryDTO(cat);
     }
 
