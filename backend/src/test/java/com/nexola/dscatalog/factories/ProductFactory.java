@@ -17,4 +17,8 @@ public class ProductFactory {
     public static ProductDTO createProductDTO() {
         return new ProductDTO(createProduct());
     }
+
+    public static ProductDTO createUpdatedProductDTO() {
+        return new ProductDTO(2L, "Test", "Description", 50.0, "url", Instant.parse("2000-01-01T01:01:01Z"));
+    }
 }
