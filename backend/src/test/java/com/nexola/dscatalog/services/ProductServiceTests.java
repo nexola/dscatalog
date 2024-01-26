@@ -50,24 +50,22 @@ public class ProductServiceTests {
         page = new PageImpl<>(List.of(product));
         productDTO = ProductFactory.createProductDTO();
         updatedProductDTO = ProductFactory.createUpdatedProductDTO();
-
+        // findAll
         Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
+
         Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
+        // findById
         Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
         Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
-
-        // Simula o comportamento do repository.deleteById (não deve retornar nada quando o método for chamado com ID existente)
-        Mockito.doNothing().when(repository).deleteById(existingId);
-        Mockito.doThrow(DatabaseException.class).when(repository).deleteById(dependentId);
-
+        // update
         Mockito.when(repository.getReferenceById(existingId)).thenReturn(product);
         Mockito.doThrow(ResourceNotFoundException.class).when(repository).getReferenceById(nonExistingId);
-
+        // delete
+        Mockito.doNothing().when(repository).deleteById(existingId);
+        Mockito.doThrow(DatabaseException.class).when(repository).deleteById(dependentId);
         Mockito.when(repository.existsById(existingId)).thenReturn(true);
         Mockito.when(repository.existsById(nonExistingId)).thenReturn(false);
         Mockito.when(repository.existsById(dependentId)).thenReturn(true);
-
-
     }
 
     @Test
