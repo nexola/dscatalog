@@ -52,7 +52,6 @@ public class ProductServiceTests {
         updatedProductDTO = ProductFactory.createUpdatedProductDTO();
         // findAll
         Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
-
         Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
         // findById
         Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
