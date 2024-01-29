@@ -1,7 +1,9 @@
 package com.nexola.dscatalog.dto;
 
 import com.nexola.dscatalog.entities.User;
+import com.nexola.dscatalog.services.validations.UserInsertValid;
 
+@UserInsertValid
 public class UserInsertDTO extends UserDTO {
     private String password;
 
