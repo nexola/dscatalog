@@ -2,6 +2,10 @@ package com.nexola.dscatalog.dto;
 
 import com.nexola.dscatalog.entities.Category;
 import com.nexola.dscatalog.entities.Product;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -9,10 +13,14 @@ import java.util.Set;
 
 public class ProductDTO {
     private Long id;
+    @Size(min = 3, max = 60, message = "O nome deve ter de 3 a 60 caracteres")
+    @NotBlank(message = "Campo Requerido")
     private String name;
     private String description;
+    @Positive(message = "O preço deve ser um valor positivo")
     private Double price;
     private String imgUrl;
+    @PastOrPresent(message = "A data do produto não pode ser futura")
     private Instant date;
     private Set<CategoryDTO> categories = new HashSet<>();
 

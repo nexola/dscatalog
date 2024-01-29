@@ -1,6 +1,9 @@
 package com.nexola.dscatalog.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -16,6 +19,7 @@ public class User {
     private String firstName;
     private String lastName;
     @Column(unique = true)
+    @Email
     private String email;
     private String password;
 
