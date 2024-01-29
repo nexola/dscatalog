@@ -1,7 +1,9 @@
 package com.nexola.dscatalog.services;
 
+import com.nexola.dscatalog.dto.RoleDTO;
 import com.nexola.dscatalog.dto.UserDTO;
 import com.nexola.dscatalog.dto.UserInsertDTO;
+import com.nexola.dscatalog.dto.UserUpdateDTO;
 import com.nexola.dscatalog.entities.Role;
 import com.nexola.dscatalog.entities.User;
 import com.nexola.dscatalog.repositories.RoleRepository;
@@ -18,8 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository repository;
@@ -27,41 +34,38 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
-        Page<User> page = repository.findAll(pageable);
-        return page.map(UserDTO::new);
+        Page<User> list = repository.findAll(pageable);
+        return list.map(x -> new UserDTO(x));
     }
 
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
-        User prod = repository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Recurso não encontrado")
-        );
-        return new UserDTO(prod);
+        Optional<User> obj = repository.findById(id);
+        User entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        return new UserDTO(entity);
     }
 
     @Transactional
     public UserDTO insert(UserInsertDTO dto) {
         User entity = new User();
-        dtoToEntity(dto, entity);
+        copyDtoToEntity(dto, entity);
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         entity = repository.save(entity);
         return new UserDTO(entity);
     }
 
     @Transactional
-    public UserDTO update(Long id, UserDTO dto) {
+    public UserDTO update(Long id, UserUpdateDTO dto) {
         try {
             User entity = repository.getReferenceById(id);
-            dtoToEntity(dto, entity);
+            copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
             return new UserDTO(entity);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Id not found " + id);
         }
     }
 
@@ -72,20 +76,22 @@ public class UserService {
         }
         try {
             repository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        }
+        catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
 
-    public void dtoToEntity(UserDTO dto, User entity) {
-        entity.setEmail(dto.getEmail());
+    private void copyDtoToEntity(UserDTO dto, User entity) {
+
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
+        entity.setEmail(dto.getEmail());
 
         entity.getRoles().clear();
-        dto.getRoles().forEach(roleDTO -> {
-            Role role = roleRepository.getReferenceById(roleDTO.getId());
+        for (RoleDTO roleDto : dto.getRoles()) {
+            Role role = roleRepository.getReferenceById(roleDto.getId());
             entity.getRoles().add(role);
-        });
+        }
     }
 }
