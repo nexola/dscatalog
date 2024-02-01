@@ -9,6 +9,7 @@ import com.nexola.dscatalog.repositories.CategoryRepository;
 import com.nexola.dscatalog.repositories.ProductRepository;
 import com.nexola.dscatalog.services.exceptions.DatabaseException;
 import com.nexola.dscatalog.services.exceptions.ResourceNotFoundException;
+import com.nexola.dscatalog.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,6 +49,7 @@ public class ProductService {
         List<Long> productIds = page.map(x -> x.getId()).stream().toList();
 
         List<Product> entities = repository.searchProductsWithCategories(productIds);
+        entities = Utils.replace(page.getContent(), entities);
 
         List<ProductDTO> dtos = entities.stream().map(ProductDTO::new).toList();
 

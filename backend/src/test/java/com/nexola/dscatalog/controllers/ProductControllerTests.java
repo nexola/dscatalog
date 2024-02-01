@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,6 +44,8 @@ public class ProductControllerTests {
     private Long existingId;
     private Long nonExistingId;
     private Long dependentId;
+    private String name;
+    private String productId;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -51,9 +54,11 @@ public class ProductControllerTests {
         existingId = 1L;
         nonExistingId = 2L;
         dependentId = 3L;
+        name = "";
+        productId = "1,3";
 
         // findAll
-        Mockito.when(service.findAll(ArgumentMatchers.any())).thenReturn(page);
+        Mockito.when(service.findAll(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(page);
         // findById
         Mockito.when(service.findById(existingId)).thenReturn(productDTO);
         Mockito.when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);

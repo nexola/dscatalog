@@ -3,6 +3,7 @@ package com.nexola.dscatalog.services;
 import com.nexola.dscatalog.dto.ProductDTO;
 import com.nexola.dscatalog.entities.Product;
 import com.nexola.dscatalog.factories.ProductFactory;
+import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.repositories.ProductRepository;
 import com.nexola.dscatalog.services.exceptions.DatabaseException;
 import com.nexola.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,8 @@ public class ProductServiceTests {
     private Product product;
     private ProductDTO productDTO;
     private ProductDTO updatedProductDTO;
+    private String name;
+    private String productId;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -49,9 +53,12 @@ public class ProductServiceTests {
         page = new PageImpl<>(List.of(product));
         productDTO = ProductFactory.createProductDTO();
         updatedProductDTO = ProductFactory.createUpdatedProductDTO();
+        name = "";
+        productId = "0";
         // findAll
         Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
         Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
+        Mockito.when(repository.searchProductsWithCategories(ArgumentMatchers.any())).thenReturn(List.of(product));
         // findById
         Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
         Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
@@ -98,10 +105,10 @@ public class ProductServiceTests {
     @Test
     public void findAllShouldReturnPage() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<ProductDTO> result = service.findAll("", "", pageable);
+        Page<ProductDTO> result = service.findAll(name, productId, pageable);
 
         Assertions.assertNotNull(result);
-        Mockito.verify(repository, Mockito.times(1)).findAll(pageable);
+        Mockito.verify(repository, Mockito.times(1)).searchProducts(Arrays.asList(1L, 3L), name, pageable);
     }
 
     @Test
