@@ -30,7 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	AND (LOWER(tb_product.name) LIKE LOWER(CONCAT('%',:name,'%')))
 	) AS tb_result
 	""")
-
     Page<ProductProjection> searchProducts(List<Long> categoryIds, String name, Pageable pageable);
 
     @Query("SELECT obj FROM Product obj JOIN FETCH obj.categories "

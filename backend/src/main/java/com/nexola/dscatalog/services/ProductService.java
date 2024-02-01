@@ -19,6 +19,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -95,7 +98,15 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductProjection> testQuery(Pageable pageable) {
-        return repository.searchProducts(Arrays.asList(), "", pageable);
+    public Page<ProductProjection> testQuery(String name, String categoryId, Pageable pageable) {
+        List<Long> categoryIds = List.of();
+
+        if (!Objects.equals(categoryId, "0")) {
+            String[] arr = categoryId.split(",");
+            List<String> list = Arrays.asList(arr);
+            categoryIds = list.stream().map(Long::parseLong).toList();
+        }
+
+        return repository.searchProducts(categoryIds, name, pageable);
     }
 }
