@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,17 +34,25 @@ public class ProductService {
     CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAll(Pageable pageable) {
-        Page<Product> page = repository.findAll(pageable);
-        return page.map(ProductDTO::new);
+    public Page<ProductDTO> findAll(String name, String categoryId, Pageable pageable) {
+        List<Long> categoryIds = List.of();
+
+        if (!Objects.equals(categoryId, "0")) {
+            String[] arr = categoryId.split(",");
+            List<String> list = Arrays.asList(arr);
+            categoryIds = list.stream().map(Long::parseLong).toList();
+        }
+
+        Page<ProductProjection> page = repository.searchProducts(categoryIds, name, pageable);
+
+        List<Long> productIds = page.map(x -> x.getId()).stream().toList();
+
+        List<Product> entities = repository.searchProductsWithCategories(productIds);
+
+        List<ProductDTO> dtos = entities.stream().map(ProductDTO::new).toList();
+
+        return new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
     }
-
-//    @Transactional(readOnly = true)
-//    public Page<ProductDTO> searchProductsWithCategories(Pageable pageable) {
-//        Page<Product> page = repository.searchProductsWithCategories(pageable);
-//        return page.map(ProductDTO::new);
-//    }
-
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
         Product prod = repository.findById(id).orElseThrow(
@@ -97,16 +106,5 @@ public class ProductService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public Page<ProductProjection> testQuery(String name, String categoryId, Pageable pageable) {
-        List<Long> categoryIds = List.of();
 
-        if (!Objects.equals(categoryId, "0")) {
-            String[] arr = categoryId.split(",");
-            List<String> list = Arrays.asList(arr);
-            categoryIds = list.stream().map(Long::parseLong).toList();
-        }
-
-        return repository.searchProducts(categoryIds, name, pageable);
-    }
 }

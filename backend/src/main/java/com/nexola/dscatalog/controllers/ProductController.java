@@ -22,11 +22,11 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping
-    public ResponseEntity<Page<ProductProjection>> findAll(
+    public ResponseEntity<Page<ProductDTO>> findAll(
             @RequestParam(name = "name", defaultValue = "") String name,
             @RequestParam(name = "categoryId", defaultValue = "0") String categoryId,
             Pageable pageable) {
-        Page<ProductProjection> dto = service.testQuery(name, categoryId, pageable);
+        Page<ProductDTO> dto = service.findAll(name, categoryId, pageable);
         return ResponseEntity.ok(dto);
     }
 
