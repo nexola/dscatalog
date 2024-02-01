@@ -1,9 +1,6 @@
 package com.nexola.dscatalog.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,7 +19,6 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     @Column(unique = true)
-    @Email
     private String email;
     private String password;
 

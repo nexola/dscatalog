@@ -1,6 +1,7 @@
 package com.nexola.dscatalog.controllers;
 
 import com.nexola.dscatalog.dto.ProductDTO;
+import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) {
-        Page<ProductDTO> dto = service.findAll(pageable);
+    public ResponseEntity<Page<ProductProjection>> findAll(Pageable pageable) {
+        Page<ProductProjection> dto = service.testQuery(pageable);
         return ResponseEntity.ok(dto);
     }
 

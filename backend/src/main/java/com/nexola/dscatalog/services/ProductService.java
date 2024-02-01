@@ -4,6 +4,7 @@ import com.nexola.dscatalog.dto.CategoryDTO;
 import com.nexola.dscatalog.dto.ProductDTO;
 import com.nexola.dscatalog.entities.Category;
 import com.nexola.dscatalog.entities.Product;
+import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.repositories.CategoryRepository;
 import com.nexola.dscatalog.repositories.ProductRepository;
 import com.nexola.dscatalog.services.exceptions.DatabaseException;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 
 @Service
 public class ProductService {
@@ -31,6 +34,12 @@ public class ProductService {
         Page<Product> page = repository.findAll(pageable);
         return page.map(ProductDTO::new);
     }
+
+//    @Transactional(readOnly = true)
+//    public Page<ProductDTO> searchProductsWithCategories(Pageable pageable) {
+//        Page<Product> page = repository.searchProductsWithCategories(pageable);
+//        return page.map(ProductDTO::new);
+//    }
 
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
@@ -83,5 +92,10 @@ public class ProductService {
             Category category = categoryRepository.getReferenceById(catDto.getId());
             entity.getCategories().add(category);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductProjection> testQuery(Pageable pageable) {
+        return repository.searchProducts(Arrays.asList(), "", pageable);
     }
 }
