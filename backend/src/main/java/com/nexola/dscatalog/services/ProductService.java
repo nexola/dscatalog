@@ -4,6 +4,7 @@ import com.nexola.dscatalog.dto.CategoryDTO;
 import com.nexola.dscatalog.dto.ProductDTO;
 import com.nexola.dscatalog.entities.Category;
 import com.nexola.dscatalog.entities.Product;
+import com.nexola.dscatalog.projections.IdProjection;
 import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.repositories.CategoryRepository;
 import com.nexola.dscatalog.repositories.ProductRepository;
@@ -34,6 +35,7 @@ public class ProductService {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @SuppressWarnings(value = "unchecked")
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(String name, String categoryId, Pageable pageable) {
         List<Long> categoryIds = List.of();
@@ -46,10 +48,10 @@ public class ProductService {
 
         Page<ProductProjection> page = repository.searchProducts(categoryIds, name, pageable);
 
-        List<Long> productIds = page.map(x -> x.getId()).stream().toList();
+        List<Long> productIds = page.map(IdProjection::getId).stream().toList();
 
         List<Product> entities = repository.searchProductsWithCategories(productIds);
-        entities = Utils.replace(page.getContent(), entities);
+        entities = (List<Product>) Utils.replace(page.getContent(), entities);
 
         List<ProductDTO> dtos = entities.stream().map(ProductDTO::new).toList();
 
