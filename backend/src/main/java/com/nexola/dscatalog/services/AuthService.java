@@ -66,6 +66,6 @@ public class AuthService {
 
         User user = userRepository.findByEmail(result.get(0).getEmail());
         user.setPassword(passwordEncoder.encode(body.getPassword()));
-        user = userRepository.save(user);
+        userRepository.save(user);
     }
 }
