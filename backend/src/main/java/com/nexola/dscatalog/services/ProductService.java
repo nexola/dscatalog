@@ -2,6 +2,7 @@ package com.nexola.dscatalog.services;
 
 import com.nexola.dscatalog.dto.CategoryDTO;
 import com.nexola.dscatalog.dto.ProductDTO;
+import com.nexola.dscatalog.dto.UriDTO;
 import com.nexola.dscatalog.entities.Category;
 import com.nexola.dscatalog.entities.Product;
 import com.nexola.dscatalog.projections.IdProjection;
@@ -20,17 +21,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository repository;
+
+    @Autowired
+    private S3Service s3Service;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -111,4 +116,8 @@ public class ProductService {
     }
 
 
+    public UriDTO uploadFile(MultipartFile file) {
+        URL url = s3Service.uploadFile(file);
+        return new UriDTO(url.toString());
+    }
 }

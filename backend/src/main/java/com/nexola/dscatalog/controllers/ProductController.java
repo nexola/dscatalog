@@ -1,8 +1,11 @@
 package com.nexola.dscatalog.controllers;
 
+import com.nexola.dscatalog.dto.FileDTO;
 import com.nexola.dscatalog.dto.ProductDTO;
+import com.nexola.dscatalog.dto.UriDTO;
 import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.services.ProductService;
+import com.nexola.dscatalog.services.S3Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -20,6 +24,9 @@ public class ProductController {
 
     @Autowired
     private ProductService service;
+
+    @Autowired
+    private S3Service s3Service;
 
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> findAll(
@@ -57,5 +64,12 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
+    @PostMapping(value = "/image")
+    public ResponseEntity<UriDTO> uploadImage(@RequestParam("file") MultipartFile file) {
+        UriDTO dto = service.uploadFile(file);
+        return ResponseEntity.ok().body(dto);
     }
 }
