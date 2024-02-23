@@ -1,9 +1,7 @@
 package com.nexola.dscatalog.controllers;
 
-import com.nexola.dscatalog.dto.FileDTO;
 import com.nexola.dscatalog.dto.ProductDTO;
 import com.nexola.dscatalog.dto.UriDTO;
-import com.nexola.dscatalog.projections.ProductProjection;
 import com.nexola.dscatalog.services.ProductService;
 import com.nexola.dscatalog.services.S3Service;
 import jakarta.validation.Valid;
@@ -24,9 +22,6 @@ public class ProductController {
 
     @Autowired
     private ProductService service;
-
-    @Autowired
-    private S3Service s3Service;
 
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> findAll(
